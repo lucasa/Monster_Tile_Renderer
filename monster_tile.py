@@ -28,8 +28,10 @@ bl_info = {
     'category': 'Render'}
 
 import bpy
-from bpy.props import *
-from bpy import path
+from bpy.types import Operator, AddonPreferences, Panel, Menu
+from bpy.props import (BoolProperty, EnumProperty,
+                       FloatProperty, FloatVectorProperty,
+                       IntProperty, StringProperty)
 import math
 
 # updated 2 July 2012
@@ -221,6 +223,7 @@ def do_render_job(scn):
 
 
 class RENDER_PT_SetupTiles(bpy.types.Panel):
+	
     bl_label = "Monster Tile Renderer"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
@@ -228,43 +231,36 @@ class RENDER_PT_SetupTiles(bpy.types.Panel):
 
     bts = bpy.types.Scene
 
-    bts.MyFilePath = StringProperty(
-        name='path to file',
-        subtype='DIR_PATH')   
+    bts.MyFilePath = bpy.props.StringProperty(name='path to file', subtype='DIR_PATH')   
 
     # looks at current blend and uses it as a basename, the way i like it.
     # [TODO] update with new file name, without restart blender.
     # bpy.context.scene.update()
-    mfilepath = bpy.data.filepath
-    this_blend = path.display_name_from_filepath(mfilepath)
+    #mfilepath = bpy.data.filepath
+    #this_blend = path.display_name_from_filepath(mfilepath)
 
-    bts.MyFileName = StringProperty(
-        name='file name',
-        description='file name will be suffixed by cell name',
-        default=this_blend)
+    bts.MyFileName = bpy.props.StringProperty(name='file name', description='file name will be suffixed by cell name')
         
-    bts.MyDPIsetting = IntProperty(
-        name = 'DPI',
-        description='set some reasonable value here, 150/300/600/1200',
-        min=10, max=1200, default=300)
+    bts.MyDPIsetting = IntProperty(name = 'DPI', description='set some reasonable value here, 150/300/600/1200',
+    min=10, max=1200, default=300)
         
     # arbitrary value 10meters, if you need something that big contact me.
     # i'd love to see it :)
-    bts.MyDimW = FloatProperty(
+    bts.MyDimW = bpy.props.FloatProperty(
         description="real width in cm/inch",
         min=5.0, max=1000.0, default=100.0)
-    bts.MyDimH = FloatProperty(
+    bts.MyDimH = bpy.props.FloatProperty(
         description="real height in cm/inch",
         min=5.0, max=1000.0, default=100.0)
 
-    bts.MyPXwide = IntProperty(
+    bts.MyPXwide = bpy.props.IntProperty(
         description="px width",
         min=1000, max=327670, default=1920)
-    bts.MyPXhigh = IntProperty(
+    bts.MyPXhigh = bpy.props.IntProperty(
         description="px height",
         min=1000, max=327670, default=1080)
 
-    bts.MyMaxTileWidth = IntProperty(
+    bts.MyMaxTileWidth = bpy.props.IntProperty(
         description="max px width",
         min=500, max=10000, default=1000)
     bts.MyMaxTileHeight = IntProperty(
@@ -280,7 +276,7 @@ class RENDER_PT_SetupTiles(bpy.types.Panel):
         name="Render subset of tiles",
         default=False)
     
-    bts.MySubset = StringProperty(
+    bts.MySubset = bpy.props.StringProperty(
         name = "Subset",
         description = description_full)
 
@@ -288,9 +284,9 @@ class RENDER_PT_SetupTiles(bpy.types.Panel):
     bts.MyRenderResY = IntProperty()
 
     # using the panel to display currently calculated settings
-    bts.MyOutput1 = StringProperty(default=DEFAULTLINE)
-    bts.MyOutput2 = StringProperty(default=DEFAULTLINE)
-    bts.MyOutput3 = StringProperty(default=DEFAULTLINE)
+    bts.MyOutput1 = bpy.props.StringProperty(default=DEFAULTLINE)
+    bts.MyOutput2 = bpy.props.StringProperty(default=DEFAULTLINE)
+    bts.MyOutput3 = bpy.props.StringProperty(default=DEFAULTLINE)
     
     
     def draw(self, context):
@@ -424,7 +420,6 @@ class OBJECT_OT_StartTileJob(bpy.types.Operator):
 
 
 ''' B O I L E R P L A T E '''
-
 
 reg_list = [    OBJECT_OT_StartTileJob,  
                 RENDER_PT_SetupTiles,
